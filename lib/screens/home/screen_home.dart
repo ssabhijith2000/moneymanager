@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/db/category/category_db.dart';
+import 'package:money_manager/models/category/category_model.dart';
+import 'package:money_manager/screens/category/category_add_popup.dart';
 import 'package:money_manager/screens/category/screen_category.dart';
 import 'package:money_manager/screens/home/widgets/bottom_navigation.dart';
 import 'package:money_manager/screens/transactions/screen_transactions.dart';
@@ -24,10 +27,13 @@ class ScreenHome extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (selectedIndexNotifier.value == 0) {
-            print('Add category');
+            
           } else {
-            print('Add transsactions');
-          }
+            print('add catogories');
+            showCategoryAddPopup(context);
+          //   final _sample = CategoryModel(id: DateTime.now().millisecondsSinceEpoch.toString(), name: 'travel', type: CategoryType.expense);
+          //   CategoryDB().insertCategory(_sample);
+           }
         },
         child: Icon(Icons.add),
       ),
