@@ -41,7 +41,8 @@ Future<void> showCategoryAddPopup(BuildContext context) async {
                         id: DateTime.now().microsecondsSinceEpoch.toString(),
                         name: _name,
                         type: _type);
-                  CategoryDB().insertCategory(_category);
+                  CategoryDB.instance.insertCategory(_category);
+                  CategoryDB().refreshUI();
                   Navigator.of(ctx).pop();
                   }
                 },
