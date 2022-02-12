@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/db/category/category_db.dart';
 import 'package:money_manager/models/category/category_model.dart';
+import 'package:money_manager/screens/category/category_add_popup.dart';
 
 class ScreenAddTransactions extends StatefulWidget {
   const ScreenAddTransactions({Key? key}) : super(key: key);
@@ -14,6 +15,13 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
   DateTime? _selectedDate;
   CategoryType? _selectedCategoryType;
   CategoryModel? _selectedCategoryModel;
+  String? _categoryID;
+  @override
+  void initState() {
+    _selectedCategoryType = CategoryType.income;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +71,13 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
                   children: [
                     Radio(
                       value: CategoryType.income,
-                      groupValue: CategoryType.income,
-                      onChanged: (newValue) {},
+                      groupValue: _selectedCategoryType,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _selectedCategoryType = CategoryType.income;
+                          _categoryID = null;
+                         });
+                      },
                     ),
                     Text('Income'),
                   ],
@@ -73,23 +86,38 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
                   children: [
                     Radio(
                       value: CategoryType.expense,
-                      groupValue: CategoryType.income,
-                      onChanged: (newValue) {},
+                      groupValue: _selectedCategoryType,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _selectedCategoryType = CategoryType.expense;
+                          _categoryID = null;
+                        });
+                      },
                     ),
                     Text('Expense'),
                   ],
                 ),
               ],
             ),
-            DropdownButton(
+            DropdownButton<String?>(
               hint: Text('Select Category'),
-              items: CategoryDB.instance.incomeCategoryList.value.map((e) {
+              value: _categoryID,
+              items: (_selectedCategoryType == CategoryType.income
+                      ? CategoryDB.instance.incomeCategoryList
+                      : CategoryDB().expenseCategoryList)
+                  .value
+                  .map((e) {
                 return DropdownMenuItem(
                   child: Text(e.name),
                   value: e.id,
                 );
               }).toList(),
-              onChanged: (selectedValue) {},
+              onChanged: (selectedValue) {
+                setState(() {
+                  _categoryID = selectedValue;
+                });
+ 
+              },
             ),
             ElevatedButton.icon(
               onPressed: () {},
