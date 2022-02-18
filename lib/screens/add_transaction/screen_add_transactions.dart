@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/db/category/category_db.dart';
 import 'package:money_manager/models/category/category_model.dart';
+import 'package:money_manager/models/transactions/transaction_model.dart';
 import 'package:money_manager/screens/category/category_add_popup.dart';
 
 class ScreenAddTransactions extends StatefulWidget {
@@ -16,6 +17,9 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
   CategoryType? _selectedCategoryType;
   CategoryModel? _selectedCategoryModel;
   String? _categoryID;
+  final _purposeTextEditingController = TextEditingController();
+  final _amountTextEditingController = TextEditingController();
+
   @override
   void initState() {
     _selectedCategoryType = CategoryType.income;
@@ -32,11 +36,13 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
+              controller: _purposeTextEditingController,
               decoration: const InputDecoration(
                 hintText: 'Purpose',
               ),
             ),
             TextFormField(
+              controller: _amountTextEditingController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 hintText: 'Amount',
@@ -120,7 +126,9 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
               },
             ),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () async{
+                await addTransaction();
+              },
               icon: Icon(Icons.check),
               label: Text('Add'),
             ),
@@ -129,4 +137,23 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
       )),
     );
   }
+  Future<void> addTransaction() async {
+  final _purposeText = _purposeTextEditingController.text;
+  final _amountText = _amountTextEditingController.text;
+  if (_purposeText.isEmpty){
+    return;
+  }
+  if (_amountText.isEmpty){
+    return;
+  }
+  if (_categoryID == null) {
+    return;
+  }
+ final _parsedamount = double.tryParse(_amountText);
+ if (_parsedamount == null){
+   return;
+ }
+TransactionModel(purpose: _purposeText, amount: _parsedamount, date: _selectedDate!, type: type, category: category,);
+}
+
 }
