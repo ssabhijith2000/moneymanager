@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/db/category/category_db.dart';
+import 'package:money_manager/db/transactions/transaction_db.dart';
 import 'package:money_manager/models/category/category_model.dart';
 import 'package:money_manager/models/transactions/transaction_model.dart';
 import 'package:money_manager/screens/category/category_add_popup.dart';
@@ -82,7 +83,7 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
                         setState(() {
                           _selectedCategoryType = CategoryType.income;
                           _categoryID = null;
-                         });
+                        });
                       },
                     ),
                     Text('Income'),
@@ -116,17 +117,17 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
                 return DropdownMenuItem(
                   child: Text(e.name),
                   value: e.id,
+                  onTap: ()=>_selectedCategoryModel = e ,
                 );
               }).toList(),
               onChanged: (selectedValue) {
                 setState(() {
                   _categoryID = selectedValue;
                 });
- 
               },
             ),
             ElevatedButton.icon(
-              onPressed: () async{
+              onPressed: () async {
                 await addTransaction();
               },
               icon: Icon(Icons.check),
@@ -137,23 +138,32 @@ class _ScreenAddTransactionsState extends State<ScreenAddTransactions> {
       )),
     );
   }
-  Future<void> addTransaction() async {
-  final _purposeText = _purposeTextEditingController.text;
-  final _amountText = _amountTextEditingController.text;
-  if (_purposeText.isEmpty){
-    return;
-  }
-  if (_amountText.isEmpty){
-    return;
-  }
-  if (_categoryID == null) {
-    return;
-  }
- final _parsedamount = double.tryParse(_amountText);
- if (_parsedamount == null){
-   return;
- }
-TransactionModel(purpose: _purposeText, amount: _parsedamount, date: _selectedDate!, type: type, category: category,);
-}
 
+  Future<void> addTransaction() async {
+    final _purposeText = _purposeTextEditingController.text;
+    final _amountText = _amountTextEditingController.text;
+    if (_purposeText.isEmpty) {
+      return;
+    }
+    if (_amountText.isEmpty) {
+      return;
+    }
+    if (_categoryID == null) {
+      return;
+    }
+    final _parsedamount = double.tryParse(_amountText);
+    if (_parsedamount == null) {
+      return;
+    }
+   final _model =  TransactionModel(
+      purpose: _purposeText,
+      amount: _parsedamount,
+      date: _selectedDate!,
+      type: _selectedCategoryType!,
+      category: _selectedCategoryModel!,
+    );
+    await TransactionDB.instance.addTransaction(_model);
+    Navigator.of(context).pop();
+    TransactionDB.instance.refresh();
+ }
 }
